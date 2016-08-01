@@ -1,0 +1,28 @@
+{
+   "author":"SUPINFO AppFactory",
+   "pluginName":"Home Page Grid Layout",
+   "pluginDescription":"Create a unique home page-like experience to point your users where you want them to go. You can also use this as a home folder inside your app.",
+   "supportEmail":"supinfoappfactory@supinfo.com",
+   "supportSite":"http://support.appdocumentation.com/knowledge-base/grid-layout-launcher-plugin-tutorial/",
+   "offlineModeEnabled": true,
+   "control":{
+      "content":{
+         "enabled":true
+      },
+      "design":{
+         "enabled":true
+      },
+      "settings":{
+         "enabled":false
+      }
+   },
+   "widget":{
+
+   },
+   "features":[
+
+   ],
+   "languages":[
+      "en"
+   ]
+}

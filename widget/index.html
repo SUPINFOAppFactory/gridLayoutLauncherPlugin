@@ -1,0 +1,674 @@
+﻿<!DOCTYPE html>
+<html ng-app="folderPlugin">
+<head lang="en">
+    <title>widget</title>
+    <meta charset="UTF-8">
+
+    <!-- CSS -->
+    <link href="../../../scripts/owlCarousel/owlCarousel.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="../../../styles/helper.css">
+    <link rel="stylesheet" href="../../../styles/siteIcons.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+
+    <!-- JS -->
+
+    <script src="../../../scripts/angular/angular.min.js"></script>
+    <script src="../../../scripts/jquery/jquery-1.11.2.min.js"></script>
+    <script src="../../../scripts/smartcrop.js"></script>
+    <script type="text/javascript" src="../../../scripts/buildfire.js"></script>
+    <script type="text/javascript" src="../../../scripts/owlCarousel/owlCarousel.js"></script>
+    <script src="../../../scripts/buildfire/components/carousel/carousel.js"></script>
+    <script src="../../../scripts/buildfire/components/pluginInstance/sortableList.js"></script>
+  	<script src="assets/js/angular-lazy-img.js"></script>
+
+</head>
+<body ng-cloak class="gridLayout" ng-controller="folderPluginCtrl" data-back-img="{{backgroundImage}}">
+<style ng-if="data.design.colorType === 'C'">
+    body.gridLayout {
+    background-color: {{data.design.colors.backgroundColor}} !important;
+    }
+
+	/* Show theme css only if on custom theme option */
+    div.text-holder p, .launcher-plugin.layout7 .menu-links .menu-item p {
+        color: {{data.design.colors.bodyText}} !important;
+    }
+
+    .icon, .glyphicon, .icon:hover {
+        color: {{data.design.colors.icons}} !important;
+    }
+</style>
+<!--<div class="overlay background" ng-if="data.design.selectedLayout !== 7 && backgroundImage">
+    <img lazy-img="{{backgroundImage}}" style="position: absolute;">
+</div>-->
+<div class="holder padding-zero">
+    <div class="launcher-plugin layout7" ng-if="data.design.selectedLayout == 7">
+        <div class="main-logo" ng-if="data.design.logoImage && data.design.selectedLayout != 7">
+            <div class="logo-holder">
+                <table width="100%" cellspacing="0" cellpadding="0" height="100%">
+                    <tbody>
+                    <tr>
+                        <td align="center" valign="center">
+                            <div class="logo-media">
+                                <img load-image="16X9" data-final-src="{{data.design.logoImage}}" crop-width="400" crop-type="resize">
+                                <img ng-if="!data.design.logoImage" src="../../../styles/media/holder-16x9.png">
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+            <div id="carousel" ng-if="data.content.carouselImages.length != 0 && data.design.selectedLayout != 7"
+                ></div>
+
+        <div class="menu-links">
+			<div class="menu-link" ng-repeat="plugin in data.plugins" ng-click="navigateToPlugin(plugin)">
+            	<a class="menu-item clearfix">
+	                <img load-image="1x1" data-final-src="{{ plugin.iconUrl}}" crop-width="100" crop-height="100" ng-if="plugin.iconUrl"  crop-type="crop" class="pull-left">
+	                <span class="main-icon pull-left {{ plugin.iconClassName }}" ng-if="plugin.iconClassName"></span>
+	                <span class="main-icon pull-left icon icon-puzzle" ng-if="!plugin.iconUrl && !plugin.iconClassName"></span>
+	                <p class="ellipsis pull-left">{{ plugin.title }}</p>
+	                <span class="icon right-arrow pull-right icon-chevron-right"></span>
+	            </a>
+			</div>
+        </div>
+    </div>
+    <div class="launcher-plugin layout{{ layoutClass[data.design.selectedLayout - 1] }}" ng-if="data.design.selectedLayout != 7">
+        <div class="main-logo" ng-if="data.design.logoImage && ([5, 6, 7].indexOf(data.design.selectedLayout) == -1)">
+            <div class="logo-holder">
+                <table width="100%" cellspacing="0" cellpadding="0" height="100%">
+                    <tbody>
+                    <tr>
+                        <td align="center" valign="center">
+                            <div class="logo-media">
+                                <img load-image="16X9" data-final-src="{{data.design.logoImage}}" crop-width="400" crop-type="resize">
+                                <img ng-if="!data.design.logoImage" src="../../../styles/media/holder-16x9.png">
+
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div ng-class="{ 'hidden': data.content.carouselImages.length == 0 }" class="plugin-banner clearfix">
+            <div id="carousel" class="no-background"
+                 ></div>
+        </div>
+
+        <div id="launcherSlider" class="launcher-slider text-center"></div>
+    </div>
+</div>
+<script>
+
+    /* Shared functionality */
+    var folderPluginShared = folderPluginShared || {};
+
+    folderPluginShared.getPluginDetails = function (pluginsInfo, pluginIds) {
+        var returnPlugins = [];
+        var tempPlugin = null;
+        for (var id = 0; id < pluginIds.length; id++) {
+
+            tempPlugin = {};
+
+            for (var i = 0; i < pluginsInfo.length; i++) {
+                if (pluginsInfo[i].data) {
+                    if (pluginIds[id] == pluginsInfo[i].data.instanceId) {
+
+                        tempPlugin.instanceId = pluginsInfo[i].data.instanceId;
+                        tempPlugin.iconUrl = pluginsInfo[i].data.iconUrl;
+                        tempPlugin.title = pluginsInfo[i].data.title;
+                        tempPlugin.pluginTypeId = pluginsInfo[i].data.pluginType.token;
+                        tempPlugin.folderName = pluginsInfo[i].data.pluginType.folderName;
+                        tempPlugin.iconClassName = pluginsInfo[i].data.iconClassName;
+                        returnPlugins.push(tempPlugin);
+                    }
+                } else if (pluginIds[id] == pluginsInfo[i].instanceId) {
+                    tempPlugin = pluginsInfo[i];
+                    if (!tempPlugin.title) {
+                        tempPlugin.title = "No title";
+                    }
+                    returnPlugins.push(tempPlugin);
+                }
+            }
+
+            tempPlugin = null;
+
+        }
+        return returnPlugins;
+    };
+
+    folderPluginShared.getDefaultScopeData = function () {
+        return {
+            _buildfire: {
+                plugins: {
+                    dataType: "pluginInstance",
+                    data: []
+                }
+            },
+            content: {
+                carouselImages: []
+            },
+            design: {
+                backgroundImage: null,
+                selectedLayout: 1,
+                backgroundblur: 0,
+                colors: {
+                    "backgroundColor": "",
+                    "bodyText": "",
+                    "icons": ""
+                }
+            }
+        };
+    };
+
+    folderPluginShared.save = function (newObj) {
+        buildfire.datastore.save(newObj, function (err, result) {
+            if (err || !result) {
+                console.error('Error saving the widget details: ', err);
+            }
+            else {
+                console.info('Widget details saved');
+            }
+        });
+    };
+
+    folderPluginShared.digest = function ($scope) {
+        if (!$scope.$$phase && !$scope.$root.$$phase) {
+            $scope.$apply();
+        }
+    };
+    /* End shared functionality */
+
+    folderPluginShared.getLayoutsPageSize = function () {
+        return [3, 4, 6, 8, 9, 12];
+    };
+
+    folderPluginShared.getLayoutsClass = function () {
+        return [4, 2, 3, 1, 5, 6, 7];
+    };
+
+    var folderPluginApp = angular.module('folderPlugin', ['angularLazyImg']);
+
+   /* folderPluginApp.directive("loadImage", [function () {
+        return {
+            restrict: 'A',
+            link: function (scope, element, attrs) {
+
+                var elem = $("<img>");
+                elem[0].onload = function () {
+                    element.attr("src", attrs.finalSrc);
+                    elem.remove();
+                };
+                elem.attr("src", attrs.finalSrc);
+            }
+        };
+    }])*/
+
+    folderPluginApp.config(['lazyImgConfigProvider', function(lazyImgConfigProvider){
+       // var scrollable = document.querySelector('#scrollable');
+        lazyImgConfigProvider.setOptions({
+            offset: 0 // how early you want to load image (default = 100)
+        });
+    }])
+
+   /* folderPluginApp.filter('addOnePixelSource', function () {
+                return function (input) {
+                    if (input){
+                        var inputWidth=parseInt(input.split('?')[1].split('=')[1]);
+                        if(inputWidth==1200)
+                            inputWidth=inputWidth+1;
+                        return  input.split('?')[0]+'?'+'w='+inputWidth;
+                    }else{
+                        return input;
+                    }
+                }
+            })*/
+
+
+    folderPluginApp.directive("loadImage", [function () {
+        return {
+            restrict: 'A',
+            link: function (scope, element, attrs) {
+                element.attr("src", "../../../styles/media/holder-" + attrs.loadImage + ".gif");
+
+                var _img = attrs.finalSrc;
+                if (attrs.cropType == 'resize') {
+                    var option={};
+                    if(attrs.cropHeight){
+                        option.height=attrs.cropHeight
+                    }else{
+                        option.height=window.innerHeight;
+                    }
+                    buildfire.imageLib.local.resizeImage(_img, {
+                        width: attrs.cropWidth,
+                        height: attrs.cropHeight
+                    }, function (err, imgUrl) {
+                        _img = imgUrl;
+                        replaceImg(_img);
+                    });
+                } else {
+                    buildfire.imageLib.local.cropImage(_img, {
+                        width: attrs.cropWidth,
+                        height: attrs.cropHeight
+                    }, function (err, imgUrl) {
+                        _img = imgUrl;
+                        replaceImg(_img);
+                    });
+                }
+
+                function replaceImg(finalSrc) {
+                    var elem = $("<img>");
+                    elem[0].onload = function () {
+                        element.attr("src", finalSrc);
+                        elem.remove();
+                    };
+                    elem.attr("src", finalSrc);
+                }
+            }
+        };
+    }])
+
+    folderPluginApp.directive('backImg', ["$rootScope", function ($rootScope) {
+        return function (scope, element, attrs) {
+            attrs.$observe('backImg', function (value) {
+                var img = '';
+                if (value) {
+                    buildfire.imageLib.local.cropImage(value, {
+                        width: $rootScope.deviceWidth,
+                        height: $rootScope.deviceHeight
+                    }, function (err, imgUrl) {
+                        if (imgUrl) {
+                            img = imgUrl;
+                            element.attr("style", 'background:url(' + img + ') !important ; background-size: cover !important;');
+                        } else {
+                            img = '';
+                            element.attr("style", 'background-color:white');
+                            element.css({
+                                'background-size': 'cover'
+                            });
+                        }
+                    });
+                    // img = $filter("cropImage")(value, $rootScope.deviceWidth, $rootScope.deviceHeight, true);
+                }
+                else {
+                    img = "";
+                    element.attr("style", 'background-color:white');
+                    element.css({
+                        'background-size': 'cover'
+                    });
+                }
+            });
+        };
+    }])
+
+    folderPluginApp.controller('folderPluginCtrl', ['$scope', '$sce','$rootScope', '$compile', function ($scope, $sce, $rootScope, $compile) {
+        var view = null;
+        var pagesCount = 0;
+        var loadingData = true;
+        var deviceHeight = undefined;
+        var deviceWidth = undefined;
+        var matchedBackgroundName = undefined;
+
+        $scope.data = folderPluginShared.getDefaultScopeData();
+        $scope.pageSize = folderPluginShared.getLayoutsPageSize();
+        $scope.layoutClass = folderPluginShared.getLayoutsClass();
+
+
+        /*declare the device width heights*/
+        $rootScope.deviceHeight = window.innerHeight;
+        $rootScope.deviceWidth = window.innerWidth;
+
+        function initDeviceSize(callback) {
+            deviceHeight = window.innerHeight;
+            deviceWidth = window.innerWidth;
+            $scope.sliderHeight = Math.ceil(9 * $scope.deviceWidth / 16);
+            if (callback) {
+                if (deviceWidth == 0 || deviceHeight == 0) {
+                    setTimeout(function () {
+                        initDeviceSize(callback);
+                    }, 500);
+                } else {
+                    callback();
+                    if (!$scope.$$phase && !$scope.$root.$$phase) {
+                        $scope.$apply();
+                    }
+                }
+            }
+        }
+
+        function preparePluginsData(plugins, pageSize) {
+            var temp = [];
+            var currentItem = -1;
+            var pluginsLength = 0;
+            if (plugins instanceof Array) {
+                pluginsLength = plugins.length;
+                for (var i = 0; i < pluginsLength; i++) {
+                    if (i % pageSize == 0) {
+                        currentItem++;
+                        temp[currentItem] = [];
+                        temp[currentItem].push(plugins[i]);
+                    } else {
+                        temp[currentItem].push(plugins[i]);
+                    }
+                }
+            }
+
+            $scope.data.plugins = temp;
+        }
+
+        /*
+         * bind data to the scope
+         * */
+        function bind(data) {
+            $scope.data = data;
+
+            if (!$scope.data.design) {
+                $scope.data.design = {
+                    backgroundImage: null,
+                    selectedLayout: 1,
+                    backgroundblur: 0,
+                    colors: {
+                        "backgroundColor": "",
+                        "bodyText": "",
+                        "icons": ""
+                    }
+                };
+            }
+
+            setBackgroundImage();
+
+            if (data.design.selectedLayout != 7) {
+                preparePluginsData(data.plugins, $scope.pageSize[data.design.selectedLayout - 1]);
+            }
+
+            if ($scope.data.content && $scope.data.content.carouselImages) {
+                initDeviceSize(function () {
+                    if (!view) {
+                        view = new buildfire.components.carousel.view("#carousel", $scope.data.content.carouselImages);
+                    } else {
+                        view.loadItems($scope.data.content.carouselImages);
+                    }
+                });
+            }
+
+            if (!$scope.$$phase && !$scope.$root.$$phase) {
+                $scope.$apply();
+            }
+
+            if ($scope.data.design.selectedLayout != 7) {
+                var sliderHtml = $compile(prepareSliderHTML())($scope);
+                $('#launcherSlider').html(sliderHtml);
+                if ($scope.data.plugins.length > 1) {
+                    $('#launcherSlider').owlCarousel({
+                        loop: false,
+                        nav: false,
+                        items: 1
+                    });
+                }
+            }
+
+            if ($scope.isUpdate) {
+                view = new buildfire.components.carousel.view("#carousel");
+                view.loadItems($scope.data.content.carouselImages);
+                $scope.isUpdate = false;
+            }
+        }
+
+        function dataLoadedHandler(result) {
+            var pluginsList = null;
+            if (result && result.data && !angular.equals({}, result.data) && result.data.content && result.data.design) {
+                if (result.data.content && result.data.content.loadAllPlugins) {
+                    buildfire.components.pluginInstance.getAllPlugins(function (err, res) {
+                       pagesCount = Math.ceil(res.total / 50);
+                        //pagesCount = res.total;
+                        result.data.plugins = res.data;
+                        bind(result.data);
+                        loadingData = false;
+                    });
+                } else {
+                    pluginsList = result.data._buildfire.plugins;
+
+                    if (result.data._buildfire && pluginsList && pluginsList.result && pluginsList.data) {
+                        console.log(result.data.plugins);
+                        result.data.plugins = folderPluginShared.getPluginDetails(result.data._buildfire.plugins.result, result.data._buildfire.plugins.data);
+                    }
+                    bind(result.data);
+                }
+            }
+        }
+
+        /*
+         * Go pull saved data
+         * */
+        function loadData() {
+            buildfire.datastore.getWithDynamicData(function (err, result) {
+                if (err) {
+                    console.error("Error: ", err);
+                    return;
+                }
+                dataLoadedHandler(result);
+            });
+        }
+
+        loadData();
+
+        /**
+         * when a refresh is triggered get reload data
+         */
+
+        buildfire.datastore.onRefresh(loadData);
+
+        buildfire.datastore.onUpdate(function (result) {
+
+            var iconSliderData = $('#launcherSlider').data('owlCarousel');
+            if (iconSliderData) {
+                iconSliderData.trigger('autoplay.stop.owl');
+                iconSliderData.trigger('autoplay.loop.owl', false);
+                iconSliderData.destroy();
+                $('#launcherSlider').html("");
+            }
+
+            if (view) {
+                view._destroySlider();
+                view._removeAll();
+                if ($scope.data.design.selectedLayout == 7) {
+                    $scope.isUpdate = true;
+                }
+            }
+            dataLoadedHandler(result);
+        });
+
+        /*$scope.cropImage = function (url, settings) {
+            var options = {};
+            if (!url) {
+                return "";
+            }
+            else {
+                if (settings.height) {
+                    options.height = settings.height;
+                }
+                if (settings.width) {
+                    options.width = settings.width;
+                }
+                return buildfire.imageLib.cropImage(url, options);
+            }
+        };*/
+
+        $scope.resizeImage = function (url, settings) {
+            var options = {};
+            if (!url) {
+                return "";
+            }
+            else {
+                if (settings.height) {
+                    options.height = settings.height;
+                }
+                if (settings.width) {
+                    options.width = settings.width;
+                }
+                buildfire.imageLib.local.resizeImage(url, options, function (err, imgUrl) {
+                    _imgUrl = imgUrl;
+                    return _imgUrl;
+                });
+             //   return buildfire.imageLib.resizeImage(url, options);
+            }
+        };
+
+        $scope.navigateToPlugin = function (plugin) {
+            buildfire.navigation.navigateTo({
+                pluginId: plugin.pluginTypeId,
+                instanceId: plugin.instanceId,
+                title: plugin.title,
+                folderName: plugin.folderName
+            });
+        };
+
+        $(document).on("click", ".navigate-to-plugin", function (e) {
+            var indices = $(this).data("index").split(","),
+                    plugin = $scope.data.plugins[indices[0]][indices[1]];
+            buildfire.navigation.navigateTo({
+                pluginId: plugin.pluginTypeId,
+                instanceId: plugin.instanceId,
+                title: plugin.title,
+                folderName: plugin.folderName
+            });
+        });
+
+        function setBackgroundImage() {
+            var backgroundImages = $scope.data.design.backgroundImage;
+
+            if (!backgroundImages) return;
+
+            if (typeof($scope.data.design.backgroundImage) === "string") {
+                $scope.backgroundImage = $scope.data.design.backgroundImage;
+            }
+            else {
+                if (!matchedBackgroundName) {
+                    matchedBackgroundName = getByMediaQuery(backgroundImages);
+
+                    if (!matchedBackgroundName) {
+                        matchedBackgroundName = calcMatchedBackgroundImage();
+                    }
+                }
+                console.log('matchedBackgroundName: ', matchedBackgroundName);
+                $scope.backgroundImage = backgroundImages[matchedBackgroundName];
+            }
+        }
+
+        function getByMediaQuery(){
+            var devicesAspectRatios = [
+                {
+                    mediaQueries: ['screen and (device-aspect-ratio:3/2)'],
+                    imageName: 'i3x2'
+                },
+                {
+                    mediaQueries: [
+                        'screen and (device-aspect-ratio:16/9)',
+                        'screen and (device-aspect-ratio: 40/71)',
+                        'screen and (device-aspect-ratio: 667/375)'
+                    ],
+                    imageName: 'i16x9'
+                },
+                {
+                    mediaQueries: ['screen and (device-aspect-ratio:4/3)', 'screen and (device-aspect-ratio: 3/4)'],
+                    imageName: 'i4x3'
+                },
+                {
+                    mediaQueries: ['screen and (device-aspect-ratio:16/10)'],
+                    imageName: 'i16x10'
+                }
+            ];
+
+            var backgroundImage = undefined;
+            devicesAspectRatios.forEach(function (aspectRatio) {
+
+                aspectRatio.mediaQueries.forEach(function (mediaQuery) {
+                    if (window.matchMedia(mediaQuery).matches) {
+                        console.log('match media query: ', mediaQuery);
+                        backgroundImage = aspectRatio.imageName;
+                    }
+                });
+            });
+
+            return backgroundImage;
+        }
+
+        function calcMatchedBackgroundImage(){
+            console.log('calc best aspect ratio');
+            var aspectRatios = [
+                {w: 4, h: 3},
+                {w: 3, h: 2},
+                {w: 16, h: 10},
+                {w: 16, h: 9}
+            ];
+            var aspectRatio = getAspectRatio();
+            aspectRatios.forEach(function (ratio) {
+                ratio.diff = Math.abs((ratio.w / ratio.h) - aspectRatio);
+            });
+
+            aspectRatios.sort(function (a, b) {
+                return a.diff - b.diff;
+            });
+
+            return "i" + aspectRatios[0].w + "x" + aspectRatios[0].h;
+        }
+
+        function getAspectRatio() {
+            var w = screen.width;
+            var h = screen.height;
+            var r = gcd(w, h);
+            w = w / r;
+            h = h / r;
+            if (w < h) {
+                w = h;
+                h = w;
+            }
+
+            return w / h;
+        }
+
+        function gcd(a, b) {
+            return (b == 0) ? a : gcd(b, a % b);
+        }
+
+        var prepareSliderHTML = function () {
+            var slides = $scope.data.plugins,
+                    slidesLength = slides.length,
+                    slidesHTML = "";
+            for (var i = 0; i < slidesLength; i++) {
+                var currentSlide = slides[i];
+                slidesHTML += '<div class="plugin-slide">\
+			                       <div class="launcher-icons' + ([1, 3, 5].indexOf($scope.data.design.selectedLayout) != -1 ? ' three-row' : ' four-row') + '">';
+                for (var y = 0; y < currentSlide.length; y++) {
+                    var pluginItem = currentSlide[y];
+                    slidesHTML += '<a class="launcher-icon navigate-to-plugin" data-index="' + i + ',' + y + '">\
+					            <div class="icon-holder text-center">';
+                    if (pluginItem.iconUrl)
+                        slidesHTML += '	<img load-image="1x1" data-final-src="' + pluginItem.iconUrl+'" crop-width="100" crop-height="100" crop-type="crop">';
+
+                    if (pluginItem.iconClassName)
+                        slidesHTML += '<span class="icon main-icon text-primary ' + pluginItem.iconClassName + '"></span>';
+                    if (!pluginItem.iconUrl && !pluginItem.iconClassName)
+                        slidesHTML += '	<span class="icon icon-puzzle main-icon text-primary"></span>';
+
+                    slidesHTML += '</div>\
+					            <div class="text-holder text-center">\
+						            <p class="ellipsis-two">' +
+                            pluginItem.title
+                    slidesHTML += '	</p>\
+					            </div>\
+				            </a>';
+                }
+                slidesHTML += '	</div>\
+		            </div>';
+            }
+            return slidesHTML;
+        }
+    }]);
+</script>
+</body>
+</html>

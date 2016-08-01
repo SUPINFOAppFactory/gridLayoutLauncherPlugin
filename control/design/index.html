@@ -1,0 +1,361 @@
+﻿<!DOCTYPE html>
+<html ng-app="folderPluginDesign">
+<head lang="en">
+    <title>design</title>
+    <meta charset="UTF-8">
+
+    <!-- CSS -->
+    <link href="../../../../styles/helper.css" rel="stylesheet">
+    <link href="../../../../styles/siteIcons.css" rel="stylesheet">
+    <link href="../../styles/angular-color-picker.css" rel="stylesheet">
+
+    <!-- JS -->
+    <script src="../../../../scripts/buildfire.js"></script>
+    <script src="../../../../scripts/jquery/jquery-1.11.2.min.js"></script>
+    <script src="../../../../scripts/angular/angular.min.js"></script>
+    <script src="../../js/ui-bootstrap.min.js"></script>
+    <script src="../../js/angular-color-picker.js"></script>
+    <script src="../../js/shared.js"></script>
+
+</head>
+<body ng-controller="folderPluginCtrl" ng-cloak ng-show="datastoreInitialized">
+<div ng-form="frmMain">
+    <div class="item clearfix row margin-bottom-twenty">
+        <div class="labels col-md-3 padding-right-zero pull-left">
+            <span>Logo</span>
+        </div>
+        <div class="main col-md-9 pull-right">
+            <div class="screens clearfix">
+                <div class="screen text-center logoicon pull-left">
+                    <a class="border-grey border-radius-three default-background-hover" ng-click="changeLogo()">
+                        <span class="add-icon" ng-hide="data.design.logoImage">+</span>
+                        <img ng-src="{{ resizeImage(data.design.logoImage) }}" alt="Logo Image" ng-show="data.design.logoImage"/>
+                    </a>
+                    <label class="secondary">800x300</label>
+                    <span class="icon btn-icon btn-delete-icon btn-danger transition-third" ng-click="deleteLogo()" ng-show="data.design.logoImage"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr class="none">
+    <div class="item row margin-bottom-twenty clearfix">
+        <div class="labels col-md-3 padding-right-zero pull-left">
+            <span>Layout Style</span>
+        </div>
+        <div class="main col-md-9 pull-right">
+            <div class="screens clearfix">
+                <div class="screen layouticon pull-left">
+                    <a class="border-radius-three default-background-hover text-center">
+                        <img ng-src="{{ availableLayouts[data.design.selectedLayout - 1] }}">
+                    </a>
+                </div>
+                <div class="screen layoutgrid pull-right margin-left-zero border-grey border-radius-three">
+                    <a class="layouticon border-radius-three default-background-hover text-center" ng-repeat="layout in availableLayouts" ng-click="changeLayout($index)">
+                        <img ng-src="{{ layout }}">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr class="none">
+    <div class="item clearfix row margin-bottom-twenty">
+        <div class="labels col-md-3 padding-right-zero pull-left">
+            <span>Background Image</span>
+        </div>
+        <div class="main col-md-9 pull-right">
+            <div class="screens clearfix">
+                <div class="screens flexalign clearfix">
+                    <div class="screen mostdevices pull-left text-center">
+                        <a class="border-radius-three default-background-hover" ng-click="changeBackground('i3x2')">
+                            <span ng-hide="data.design.backgroundImage.i3x2" class="add-icon">+</span>
+                            <img ng-show="data.design.backgroundImage.i3x2" ng-src="{{resizeImage(data.design.backgroundImage.i3x2)}}">
+                        </a>
+                        <label>3:2</label>
+                        <label class="secondary">640x960</label>
+                        <span class="tip btn-info-icon btn-primary transition-third" tooltip="iPhone 3, 4, and some Android devices will fall into this category." tooltip-placement="top"></span>
+                        <span class="icon btn-icon btn-delete-icon btn-danger transition-third" ng-click="deleteBackground('i3x2')" ng-show="data.design.backgroundImage.i3x2"></span>
+                    </div>
+                    <div class="screen iphone pull-left text-center">
+                        <a class="border-radius-three default-background-hover" ng-click="changeBackground('i16x9')">
+                            <span ng-hide="data.design.backgroundImage.i16x9" class="add-icon">+</span>
+                            <img ng-show="data.design.backgroundImage.i16x9" ng-src="{{resizeImage(data.design.backgroundImage.i16x9)}}">
+                        </a>
+                        <label>16:9</label>
+                        <label class="secondary">1242x2208</label>
+                        <span class="tip btn-info-icon btn-primary transition-third" tooltip="iPhone 5, 6, 6 Plus, and some Android devices will fall into this category."
+                              tooltip-placement="top"></span>
+                        <span class="icon btn-icon btn-delete-icon btn-danger transition-third" ng-click="deleteBackground('i16x9')" ng-show="data.design.backgroundImage.i16x9"></span>
+                    </div>
+                    <div class="screen ipads pull-left text-center">
+                        <a class="border-radius-three default-background-hover" ng-click="changeBackground('i4x3')">
+                            <span ng-hide="data.design.backgroundImage.i4x3" class="add-icon">+</span>
+                            <img ng-show="data.design.backgroundImage.i4x3" ng-src="{{resizeImage(data.design.backgroundImage.i4x3)}}">
+                        </a>
+                        <label>4:3</label>
+                        <label class="secondary">1536x2048</label>
+                        <span class="tip btn-info-icon btn-primary transition-third" tooltip="iPads and some Android devices will fall into this category." tooltip-placement="top"></span>
+                        <span class="icon btn-icon btn-delete-icon btn-danger transition-third" ng-click="deleteBackground('i4x3')" ng-show="data.design.backgroundImage.i4x3"></span>
+                    </div>
+                    <div class="screen tablets pull-left text-center">
+                        <a class="border-radius-three default-background-hover" ng-click="changeBackground('i16x10')">
+                            <span ng-hide="data.design.backgroundImage.i16x10" class="add-icon">+</span>
+                            <img ng-show="data.design.backgroundImage.i16x10" ng-src="{{resizeImage(data.design.backgroundImage.i16x10)}}">
+                        </a>
+                        <label>16:10</label>
+                        <label class="secondary">1600x2560</label>
+                        <span class="tip btn-info-icon btn-primary transition-third" tooltip="Some Android devices and tablets will fall into this category." tooltip-placement="top"></span>
+                        <span class="icon btn-icon btn-delete-icon btn-danger transition-third" ng-click="deleteBackground('i16x10')" ng-show="data.design.backgroundImage.i16x10"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr class="none">
+    <div class="item clearfix row margin-bottom-ten">
+        <div class="labels col-md-3 padding-right-zero pull-left">
+            <span>Theme Colors</span>
+        </div>
+        <div class="main col-md-9 pull-right">
+            <div class="radio radio-primary radio-inline">
+                <input id="appearance" type="radio" name="colorType" ng-checked="data.design.colorType=='A'" ng-click="setColorType('A')"/>
+                <label for="appearance">Inherit Appearance Theme</label>
+            </div>
+            <div class="radio radio-primary radio-inline">
+                <input id="customColor" type="radio" name="colorType" ng-checked="data.design.colorType=='C'" ng-click="setColorType('C')"/>
+                <label for="customColor">Custom Theme</label>
+            </div>
+        </div>
+    </div>
+    <hr class="none">
+    <div class="item clearfix row margin-bottom-twenty" ng-if="data.design.colorType=='C'">
+        <div class="main col-md-9 pull-right">
+            <div class="colorgrid pull-left">
+                <div class="colorgrid pull-left row">
+                    <div class="coloritem col-md-6 pull-left" ng-repeat="(key, value) in defaultColors">
+                        <a class="img-thumbnail" ng-click="showColorPicker($event, key)">
+                            <span class="color btn-primary border-radius-three border-grey" ng-style="{'background-color': data.design.colors[key]}"></span>
+                        </a>
+                        <label ng-click="showColorPicker($event, key)">{{colorLabels[key]}}</label>
+                        <div class="color-picker" ng-show="colorPickerKey === key" ng-mousedown="$event.stopPropagation();">
+                            <color-picker ng-model="data.design.colors[key]"></color-picker>
+                            <input type="text" class="form-control" ng-model="data.design.colors[key]" ng-init="">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var folderPluginApp = angular.module('folderPluginDesign', ['ui.bootstrap', 'mp.colorPicker']);
+
+    folderPluginApp.controller('folderPluginCtrl', ['$scope', '$window', function ($scope, $window) {
+        var tmrDelay = null;
+		
+		$scope.defaultColors = {
+            "backgroundColor": "#FFFFFF",
+            "bodyText": "#32373a",
+            "icons": "#09a3ee"
+        };
+
+        $scope.availableLayouts = folderPluginShared.getLayouts();
+
+        $scope.data = folderPluginShared.getDefaultScopeData();
+
+        $scope.datastoreInitialized = false;
+
+        /*
+         * Go pull any previously saved data
+         * */
+        buildfire.datastore.getWithDynamicData(function (err, result) {
+            if (!err) {
+                $scope.datastoreInitialized = true;
+            } else {
+                console.error("Error: ", err);
+                return;
+            }
+
+            if (result && result.data && !angular.equals({}, result.data)) {
+                $scope.data = result.data;
+                $scope.id = result.id;
+
+                if (!$scope.data._buildfire) {
+                    $scope.data._buildfire = {
+                        plugins: {
+                            dataType: "pluginInstance",
+                            data: []
+                        }
+                    };
+                }
+
+                if (!$scope.data.design) {
+                    $scope.data.design = {
+                        backgroundImage: {},
+                        selectedLayout: 1,
+                        backgroundblur: 0,
+                        colors: {}
+                    };
+                }
+                else {
+                    if (typeof($scope.data.design.backgroundImage) === "string") {
+                        $scope.data.design.backgroundImage = {
+                            "i3x2": $scope.data.design.backgroundImage
+                        }
+                    }
+                }
+            }
+
+            $scope.data.design = $scope.data.design || {};
+            $scope.data.design.colors = $scope.data.design.colors || {};
+             //  $scope.data.design.colorType = angular.equals({}, $scope.data.design.colors) ? "A" : "C";
+
+            if(angular.equals({}, $scope.data.design.colors)){
+                $scope.data.design.colorType = "A";
+            }
+            /*
+             * watch for changes in data and trigger the saveData function on change
+             * */
+            $scope.$watch('data', saveDataWithDelay, true);
+            folderPluginShared.digest($scope);
+        });
+
+				
+        /*
+         * create an artificial delay so api isnt called on every character entered
+         * */
+        var saveDataWithDelay = function (newObj, oldObj) {
+            if (tmrDelay) clearTimeout(tmrDelay);
+            if (angular.equals(newObj, oldObj)) return;
+            tmrDelay = setTimeout(function () {
+                saveData(newObj);
+            }, 500);
+        };
+		
+        /*
+         * Call the datastore to save the data object
+         * */
+        var saveData = function (newObj, oldObj) {
+            if (!$scope.datastoreInitialized) {
+                console.error("Error with datastore didn't get called");
+                return;
+            }
+
+            if (newObj == undefined) return;
+            if (angular.equals(newObj, oldObj)) return;
+
+            if ($scope.frmMain.$invalid) {
+                console.warn('invalid data, details will not be saved');
+                return;
+            }
+
+            folderPluginShared.save(newObj);
+        };
+
+        /*
+         * Open a dailog to change the background image
+         * */
+        $scope.changeBackground = function (imageName) {
+            buildfire.imageLib.showDialog({showIcons: false, multiSelection: false}, function (err, result) {
+                if (err) {
+                    return console.err('Error:', error);
+                }
+                if (result.selectedFiles && result.selectedFiles.length) {
+                    $scope.data.design = $scope.data.design || {};
+                    $scope.data.design.backgroundImage = $scope.data.design.backgroundImage || {};
+                    $scope.data.design.backgroundImage[imageName] = result.selectedFiles[0];
+                    folderPluginShared.digest($scope);
+                }
+            });
+        };
+
+        /*
+         * Delete the background and back to the default white background
+         * */
+        $scope.deleteBackground = function (imageName) {
+            $scope.data.design = $scope.data.design || {};
+            $scope.data.design.backgroundImage = $scope.data.design.backgroundImage || {};
+            $scope.data.design.backgroundImage[imageName] = undefined;
+            folderPluginShared.digest($scope);
+        };
+
+        /*
+         * Open a dailog to change the background image
+         * */
+        $scope.changeLogo = function () {
+            buildfire.imageLib.showDialog({showIcons: false, multiSelection: false}, function (error, result) {
+                if (result && result.selectedFiles && result.selectedFiles.length > 0) {
+                    if (!$scope.data.design) {
+                        $scope.data.design = {};
+                    }
+                    $scope.data.design.logoImage = result.selectedFiles[0];
+                    folderPluginShared.digest($scope);
+                }
+            });
+        };
+
+        /*
+         * Delete the background and back to the default white background
+         * */
+        $scope.deleteLogo = function () {
+            $scope.data.design.logoImage = "";
+            folderPluginShared.digest($scope);
+        };
+
+        /*
+         * Get background image thumbnail
+         * */
+        $scope.resizeImage = function (url) {
+            if (!url) {
+                return "";
+            }
+            else {
+                return buildfire.imageLib.resizeImage(url, {width: 88});
+            }
+        };
+
+        $scope.changeLayout = function (layoutId) {
+            var newLayout = layoutId + 1;
+            if (newLayout != $scope.data.design.selectedLayout) {
+                $scope.data.design.selectedLayout = newLayout;
+                folderPluginShared.digest($scope);
+            }
+        };
+
+        $scope.colorLabels = {
+            "backgroundColor": "Background Color",
+            "bodyText": "Body Text",
+            "icons": "Icons"
+        };
+
+        $scope.showColorPicker = function ($event, colorKey) {
+            $scope.colorPickerKey = $scope.colorPickerKey == colorKey ? undefined : colorKey;
+            $event.stopPropagation();
+        };
+
+        $scope.setColorType = function (colorType) {
+            if ($scope.data.design.colorType === colorType) return;
+            $scope.data.design.colorType = colorType;
+			
+			if(!$scope.data.design.colors || angular.equals({}, $scope.data.design.colors)) {
+				$scope.data.design.colors = {
+					"backgroundColor": "#ffffff",
+					"bodyText": "#32373a",
+					"icons": "#09a3ee"
+				};
+			}
+        };
+
+        angular.element($window).bind('mousedown', function () {
+            $scope.colorPickerKey = undefined;
+            $scope.$apply();
+        });
+
+        var digest = function () {
+            if (!$scope.$$phase && !$scope.$root.$$phase) {
+                $scope.$apply();
+            }
+        };
+    }]);
+</script>
+</body>
+</html>

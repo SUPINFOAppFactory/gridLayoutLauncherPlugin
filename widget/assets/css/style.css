@@ -1,0 +1,245 @@
+/* Launcher Plugin */
+.launcher-plugin .owl-carousel .owl-controls .owl-dots{
+	bottom:2px;
+}
+.launcher-plugin .owl-carousel .owl-controls .owl-dot{
+	height:7px;
+	width:7px;
+}
+.launcher-plugin .main-logo{
+	text-align:center;
+	height:180px;
+	width:100%;
+}
+.launcher-plugin .main-logo .logo-holder{
+	width:100%;
+	height:180px;
+}
+.launcher-plugin .main-logo .logo-holder table{
+	border:none;
+}
+.launcher-plugin .main-logo .logo-holder .logo-media{
+	width:100%;
+	width:100vw;
+	max-width:400px;
+	padding:15px 15px 14px;
+}
+.launcher-plugin .main-logo .logo-holder img{
+	max-width:100%;
+	max-height:150px;
+}
+.launcher-plugin .launcher-icons{
+	padding-left:5px;
+	padding-right:5px;
+	float:left;
+	width:100%;
+}
+.launcher-plugin .launcher-icons .launcher-icon{
+	float:left;
+	margin-bottom:12px;
+	height:68px;
+	overflow:hidden;
+}
+.launcher-plugin .launcher-icons.four-row .launcher-icon{
+	width:25%;
+	padding:0 3px;
+}
+.launcher-plugin .launcher-icons.three-row .launcher-icon{
+	width:33.333%;
+}
+.launcher-plugin .launcher-icons .launcher-icon .main-icon{
+	font-size:32px;
+	display:block;
+}
+.launcher-plugin .launcher-icons .launcher-icon img,
+.launcher-plugin.layout7 .menu-links .menu-item img{
+	max-width:32px;
+	height:auto;
+}
+.launcher-plugin .launcher-icons .launcher-icon .text-holder p{
+	margin:6px 0 0;
+	font-size:12px;
+	line-height:15px;
+	word-wrap:break-word;
+	position:relative;
+	transform: translateZ(0px);
+	-webkit-transform: translateZ(0px);
+}
+.launcher-plugin .launcher-slider{
+	background:none;
+}
+.launcher-plugin.layout7 .menu-links .menu-link{
+	position:relative;
+}
+.launcher-plugin.layout7 .menu-links .menu-link:before{
+	content:'';
+	border-top:1px solid #ddd !important;
+	opacity:0.25;
+	bottom:0;
+	left:0;
+	width:100%;
+	position:absolute;
+}
+.launcher-plugin.layout7 .menu-links .menu-item{
+	display:block;
+	padding:15px 11px 15px 15px;
+	position:relative;
+}
+.launcher-plugin.layout7 .menu-links .menu-item span.main-icon{
+	font-size:32px;
+}
+.launcher-plugin.layout7 .menu-links .menu-item p{
+	margin-bottom:0;
+	position:relative;
+	top:6px;
+	max-width:70%;
+	padding-left:13px;
+}
+.launcher-plugin.layout7 .menu-links .menu-item span.right-arrow{
+	color:#444;
+	float:right;
+	position:relative;
+	top:8px;
+	font-size:16px;
+}
+.launcher-plugin.layout5 .launcher-icons .launcher-icon,
+.launcher-plugin.layout6 .launcher-icons .launcher-icon{
+	height:75px;
+}
+.launcher-plugin.layout5 .launcher-icons .launcher-icon img,
+.launcher-plugin.layout6 .launcher-icons .launcher-icon img{
+	max-width:40px;
+}
+.launcher-plugin.layout5 .launcher-icons .launcher-icon span.main-icon,
+.launcher-plugin.layout6 .launcher-icons .launcher-icon span.main-icon{
+	font-size:40px;
+}
+
+
+/* Inline CSS */
+.holder, .launcher-plugin {
+    height: 100%;
+}
+
+.launcher-plugin .main-logo, .launcher-slider, .launcher-plugin {
+    position: relative;
+}
+
+.launcher-slider {
+    position: absolute;
+    bottom: 0;
+	padding-bottom:14px;
+    width: 100%;
+}
+
+#launcherSlider .owl-stage-outer, #launcherSlider .owl-stage, #launcherSlider .owl-item {
+    height: 100%;
+}
+
+.overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+}
+
+
+/* Media Queries */
+@media (max-width:500px){
+	.launcher-plugin.layout5 .launcher-icons .launcher-icon,
+	.launcher-plugin.layout6 .launcher-icons .launcher-icon{
+		margin-bottom:30px;
+	}
+}
+
+@media (max-height: 700px) {
+	.plugin-slide img{
+		max-height:340px !important;
+	}
+	.launcher-plugin.layout5 .plugin-slide img,
+	.launcher-plugin.layout6 .plugin-slide img{
+		max-height:280px !important;
+	}
+}
+
+@media (max-height: 640px) {
+	.launcher-plugin .main-logo .logo-holder img {
+        max-height: 125px;
+    }
+    .launcher-plugin .main-logo .logo-holder, .launcher-plugin .main-logo {
+        height: 155px;
+    }
+	.plugin-slide img{
+		max-height:300px !important;
+	}
+}
+@media (max-height: 560px) {
+    .launcher-plugin .main-logo .logo-holder img {
+        max-height: 110px;
+    }
+    .launcher-plugin .main-logo .logo-holder, .launcher-plugin .main-logo {
+        height: 135px;
+    }
+	.plugin-slide img,
+	.launcher-plugin.layout5 .plugin-slide img,
+	.launcher-plugin.layout6 .plugin-slide img{
+		max-height:210px !important;
+	}
+}
+
+@media (max-height: 542px) {
+ 	.plugin-slide img,
+	.launcher-plugin.layout5 .plugin-slide img,
+	.launcher-plugin.layout6 .plugin-slide img{
+		max-height:190px !important;
+	}
+	.launcher-plugin.layout5 .launcher-icons .launcher-icon,
+	.launcher-plugin.layout6 .launcher-icons .launcher-icon{
+		margin-bottom:22px;
+		height:71px;
+	}
+	.launcher-plugin.layout5 .launcher-icons .launcher-icon img,
+	.launcher-plugin.layout6 .launcher-icons .launcher-icon img{
+		max-width:36px;
+	}
+	.launcher-plugin.layout5 .launcher-icons .launcher-icon span.main-icon,
+	.launcher-plugin.layout6 .launcher-icons .launcher-icon span.main-icon{
+		font-size:36px;
+	}
+}
+
+@media (max-height: 500px) {
+    .launcher-plugin .main-logo .logo-holder img {
+        max-height: 75px;
+    }
+    .launcher-plugin .main-logo .logo-holder, .launcher-plugin .main-logo {
+        height: 100px;
+    }
+}
+
+@media (max-height: 465px) {
+    .launcher-plugin .main-logo .logo-holder img {
+        max-height: 65px;
+    }
+    .launcher-plugin .main-logo .logo-holder, .launcher-plugin .main-logo {
+        height: 90px;
+    }
+	.plugin-slide img,
+	.launcher-plugin.layout5 .plugin-slide img,
+	.launcher-plugin.layout6 .plugin-slide img{
+		max-height:156px !important;
+	}
+	.launcher-plugin.layout5 .launcher-icons .launcher-icon,
+	.launcher-plugin.layout6 .launcher-icons .launcher-icon{
+		margin-bottom:20px;
+		height:68px;
+	}
+	.launcher-plugin.layout5 .launcher-icons .launcher-icon img,
+	.launcher-plugin.layout6 .launcher-icons .launcher-icon img{
+		max-width:32px;
+	}
+	.launcher-plugin.layout5 .launcher-icons .launcher-icon span.main-icon,
+	.launcher-plugin.layout6 .launcher-icons .launcher-icon span.main-icon{
+		font-size:32px;
+	}
+}
